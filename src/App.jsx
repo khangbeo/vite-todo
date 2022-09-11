@@ -20,6 +20,7 @@ function App() {
       return [];
     }
   });
+  const [error, setError] = useState('');
 
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
@@ -35,19 +36,39 @@ function App() {
       setTodos([...todos, newTodo]);
     }
 
-    setText('');
+    if (todo === '') {
+      setError('Please enter a todo');
+    } else {
+      setError('');
+    }
+    setTodo('');
   };
 
-  function handleEditInputChange(e) {
-    // set the new state value to what's currently in the edit input box
-    setCurrentTodo({ ...currentTodo, text: e.target.value });
-  }
-
+  // edit flow works like this
+  // when user click edit button, we setIsEditing to true so the app knows we're in edit mode
+  // then we store the current todo item that was clicked into a new state variable
+  // when user type a text in the edit form, we update the currentTodo state variable with updated info
+  // when user submit the form, we call updateTodo function with currentTodo's id and state value
+  // next, we map the todos array and return a new array where the currentTodo's id matches the current index's id
+  // if it matches, then the new array will contain updated todo, if not, then nothing changes
+  // then we set old todos array with the updated todos
   function handleEditClick(todo) {
     // set editing to true
     setIsEditing(true);
     // set the currentTodo to the todo item that was clicked
     setCurrentTodo({ ...todo });
+  }
+
+  function handleEditInputChange({ target }) {
+    // set the new state value to what's currently in the edit input box
+    setCurrentTodo({ ...currentTodo, text: target.value });
+  }
+
+  function handleEditFormSubmit(e) {
+    e.preventDefault();
+
+    // call the handleUpdateTodo function - passing the currentTodo.id and the currentTodo object as arguments
+    handleUpdateTodo(currentTodo.id, currentTodo);
   }
 
   function handleUpdateTodo(id, updatedTodo) {
@@ -63,15 +84,9 @@ function App() {
     setTodos(updatedItem);
   }
 
-  function handleEditFormSubmit(e) {
-    e.preventDefault();
-
-    // call the handleUpdateTodo function - passing the currentTodo.id and the currentTodo object as arguments
-    handleUpdateTodo(currentTodo.id, currentTodo);
-  }
-
   const removeTodo = (id) => {
     const newTodos = todos.filter((todo) => todo.id !== id);
+    setError('');
     setTodos(newTodos);
   };
 
@@ -89,14 +104,16 @@ function App() {
           name="text"
           value={todo}
           onChange={handleFormChange}
-          placeholder='Add todo'
+          placeholder="Add todo"
         />
       </form>
+      {error.length > 0 && <p>{error}</p>}
 
       <div>
+        {todos.length === 0 && <p>No todos yet</p>}
         {todos.map((todo) => (
           <div key={todo.id}>
-            {isEditing ? (
+            {isEditing && todo.id === currentTodo.id ? (
               <form onSubmit={handleEditFormSubmit}>
                 <input
                   name="editTodo"
@@ -110,7 +127,7 @@ function App() {
               <p>{todo.text}</p>
             )}
 
-            {isEditing ? (
+            {isEditing && todo.id === currentTodo.id ? (
               <button onClick={() => setIsEditing(false)}>Cancel</button>
             ) : (
               <button onClick={() => handleEditClick(todo)}>Edit</button>
