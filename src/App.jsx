@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Box, Center } from '@chakra-ui/react';
 
 const getUUID = () =>
   (String(1e7) + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
@@ -27,6 +26,7 @@ function App() {
     localStorage.setItem('todos', JSON.stringify(todos));
   }, [todos]);
 
+  // Create
   const addTodo = (e) => {
     e.preventDefault();
     if (todo !== '') {
@@ -53,38 +53,31 @@ function App() {
   // next, we map the todos array and return a new array where the currentTodo's id matches the current index's id
   // if it matches, then the new array will contain updated todo, if not, then nothing changes
   // then we set old todos array with the updated todos
+
+  // Edit
   function handleEditClick(todo) {
-    // set editing to true
     setIsEditing(true);
-    // set the currentTodo to the todo item that was clicked
     setCurrentTodo({ ...todo });
   }
 
   function handleEditInputChange({ target }) {
-    // set the new state value to what's currently in the edit input box
     setCurrentTodo({ ...currentTodo, text: target.value });
   }
 
   function handleEditFormSubmit(e) {
     e.preventDefault();
-
-    // call the handleUpdateTodo function - passing the currentTodo.id and the currentTodo object as arguments
     handleUpdateTodo(currentTodo.id, currentTodo);
   }
 
   function handleUpdateTodo(id, updatedTodo) {
-    // here we are mapping over the todos array - the idea is check if the todo.id matches the id we pass into the function
-    // if the id's match, use the second parameter to pass in the updated todo object
-    // otherwise just use old todo
     const updatedItem = todos.map((todo) => {
       return todo.id === id ? updatedTodo : todo;
     });
-    // set editing to false because this function will be used inside a onSubmit function - which means the data was submited and we are no longer editing
     setIsEditing(false);
-    // update the todos state with the updated todo
     setTodos(updatedItem);
   }
 
+  // Delete
   const removeTodo = (id) => {
     const newTodos = todos.filter((todo) => todo.id !== id);
     setError('');
