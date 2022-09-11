@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Box, Center } from '@chakra-ui/react';
 
 const getUUID = () =>
   (String(1e7) + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
@@ -95,7 +96,7 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div>
       <h1>Vite To Do List</h1>
 
       <form onSubmit={addTodo}>
