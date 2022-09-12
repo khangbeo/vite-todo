@@ -101,22 +101,33 @@ function App() {
           placeholder="Add todo"
         />
       </form>
-      {error.length > 0 && <p>{error}</p>}
+      {error.length > 0 && <p style={{ color: 'red' }}>{error}</p>}
 
       <div>
-        {todos.length === 0 && <p>No todos yet</p>}
+        {todos.length === 0 ? (
+          <p>No todos yet</p>
+        ) : (
+          <h3>You have {todos.length} Tasks</h3>
+        )}
+
+        {todos.length > 0 && (
+          <button onClick={() => setTodos([])}>Clear All</button>
+        )}
+
         {todos.map((todo) => (
           <div key={todo.id}>
             {isEditing && todo.id === currentTodo.id ? (
-              <form onSubmit={handleEditFormSubmit}>
-                <input
-                  name="editTodo"
-                  type="text"
-                  placeholder="Edit todo"
-                  value={currentTodo.text}
-                  onChange={handleEditInputChange}
-                />
-              </form>
+              <p>
+                <form onSubmit={handleEditFormSubmit}>
+                  <input
+                    name="editTodo"
+                    type="text"
+                    placeholder="Edit todo"
+                    value={currentTodo.text}
+                    onChange={handleEditInputChange}
+                  />
+                </form>
+              </p>
             ) : (
               <p>{todo.text}</p>
             )}
