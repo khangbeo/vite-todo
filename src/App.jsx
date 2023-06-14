@@ -48,27 +48,25 @@ function App() {
   // edit flow works like this
   // when user click edit button, we setIsEditing to true so the app knows we're in edit mode
   // then we store the current todo item that was clicked into a new state variable
-  // when user type a text in the edit form, we update the currentTodo state variable with updated info
-  // when user submit the form, we call updateTodo function with currentTodo's id and state value
-  // next, we map the todos array and return a new array where the currentTodo's id matches the current index's id
-  // if it matches, then the new array will contain updated todo, if not, then nothing changes
-  // then we set old todos array with the updated todos
-
-  // Edit
   function handleEditClick(todo) {
     setIsEditing(true);
     setCurrentTodo({ ...todo });
   }
 
+  // when user type a text in the edit form, we update the currentTodo state variable with updated info
   function handleEditInputChange({ target }) {
     setCurrentTodo({ ...currentTodo, text: target.value });
   }
 
+  // when user submit the form, we call updateTodo function with currentTodo's id and state value
   function handleEditFormSubmit(e) {
     e.preventDefault();
     handleUpdateTodo(currentTodo.id, currentTodo);
   }
 
+  // next, we map the todos array and return a new array where the currentTodo's id matches the current index's id
+  // if it matches, then the new array will contain updated todo, if not, then nothing changes
+  // then we set old todos array with the updated todos
   function handleUpdateTodo(id, updatedTodo) {
     const updatedItem = todos.map((todo) => {
       return todo.id === id ? updatedTodo : todo;
@@ -88,6 +86,41 @@ function App() {
     setTodo(target.value);
   };
 
+  const errorText = error.length > 0 && <p style={{ color: 'red' }}>{error}</p>
+  const todosCount = todos.length === 0 ? (
+    <p>No todos yet</p>
+  ) : (
+    <h3>You have {todos.length} Tasks</h3>
+  )
+
+  const listTodos = todos.map((todo) => (
+    <div key={todo.id}>
+      {isEditing && todo.id === currentTodo.id ? (
+        <p>
+          <form onSubmit={handleEditFormSubmit}>
+            <input
+              name="editTodo"
+              type="text"
+              placeholder="Edit todo"
+              value={currentTodo.text}
+              onChange={handleEditInputChange}
+            />
+          </form>
+        </p>
+      ) : (
+        <p>{todo.text}</p>
+      )}
+
+      {isEditing && todo.id === currentTodo.id ? (
+        <button onClick={() => setIsEditing(false)}>Cancel</button>
+      ) : (
+        <button onClick={() => handleEditClick(todo)}>Edit</button>
+      )}
+
+      <button onClick={() => removeTodo(todo.id)}>Delete</button>
+    </div>
+  ))
+
   return (
     <div>
       <h1>Vite To Do List</h1>
@@ -101,46 +134,15 @@ function App() {
           placeholder="Add todo"
         />
       </form>
-      {error.length > 0 && <p style={{ color: 'red' }}>{error}</p>}
+      {errorText}
 
       <div>
-        {todos.length === 0 ? (
-          <p>No todos yet</p>
-        ) : (
-          <h3>You have {todos.length} Tasks</h3>
-        )}
+        {todosCount}
 
         {todos.length > 0 && (
           <button onClick={() => setTodos([])}>Clear All</button>
         )}
-
-        {todos.map((todo) => (
-          <div key={todo.id}>
-            {isEditing && todo.id === currentTodo.id ? (
-              <p>
-                <form onSubmit={handleEditFormSubmit}>
-                  <input
-                    name="editTodo"
-                    type="text"
-                    placeholder="Edit todo"
-                    value={currentTodo.text}
-                    onChange={handleEditInputChange}
-                  />
-                </form>
-              </p>
-            ) : (
-              <p>{todo.text}</p>
-            )}
-
-            {isEditing && todo.id === currentTodo.id ? (
-              <button onClick={() => setIsEditing(false)}>Cancel</button>
-            ) : (
-              <button onClick={() => handleEditClick(todo)}>Edit</button>
-            )}
-
-            <button onClick={() => removeTodo(todo.id)}>Delete</button>
-          </div>
-        ))}
+        {listTodos}
       </div>
     </div>
   );
